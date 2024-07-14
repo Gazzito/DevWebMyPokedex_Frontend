@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useQuery } from 'react-query';
-import Navbar from './Navbar';
+import React, { useState } from 'react';  // Importa React e useState do pacote 'react'
+import { useQuery } from 'react-query';  // Importa o hook useQuery da biblioteca 'react-query'
+import Navbar from './Navbar';  // Importa o componente Navbar
 
+// Função assíncrona para buscar Pokémons com base em vários filtros
 const fetchPokemons = async ({ queryKey }) => {
   const [
     _key,
@@ -17,8 +18,9 @@ const fetchPokemons = async ({ queryKey }) => {
       isMostSpeedSelected,
       searchKeyword
     }
-  ] = queryKey;
+  ] = queryKey;  // Desestrutura os parâmetros da queryKey
 
+  // Constrói a string de parâmetros da URL
   const queryParams = new URLSearchParams({
     userId,
     page,
@@ -32,11 +34,12 @@ const fetchPokemons = async ({ queryKey }) => {
     searchKeyword
   }).toString();
 
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('authToken');  // Obtém o token de autenticação do localStorage
   if (!token) {
-    throw new Error('No token found');
+    throw new Error('No token found');  // Lança um erro se o token não for encontrado
   }
 
+  // Faz uma requisição à API para buscar os Pokémons
   const response = await fetch(`http://localhost:5196/api/Pokemons/GetAllOwnedPokemonsWithFiltersWithPaginationAndSearch?${queryParams}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -45,32 +48,35 @@ const fetchPokemons = async ({ queryKey }) => {
   });
 
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error('Network response was not ok');  // Lança um erro se a resposta não for bem-sucedida
   }
 
-  return response.json();
+  return response.json();  // Converte a resposta em JSON
 };
 
+// Componente principal da Pokedex
 const Pokedex = () => {
-  const userId = localStorage.getItem('userId'); // Obtém o userId do localStorage
-  const [page, setPage] = useState(1);
-  const [maxRecords] = useState(10);
-  const [isLatest] = useState(true);
-  const [rarityChoosen, setRarityChoosen] = useState('');
-  const [isMostAttackSelected, setMostAttackSelected] = useState(false);
-  const [isMostHPSelected, setMostHPSelected] = useState(false);
-  const [isMostDefSelected, setMostDefSelected] = useState(false);
-  const [isMostSpeedSelected, setMostSpeedSelected] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const userId = localStorage.getItem('userId');  // Obtém o userId do localStorage
+  const [page, setPage] = useState(1);  // Define o estado para a página atual
+  const [maxRecords] = useState(10);  // Define o número máximo de registros por página
+  const [isLatest] = useState(true);  // Define o estado para o filtro "isLatest"
+  const [rarityChoosen, setRarityChoosen] = useState('');  // Define o estado para a raridade escolhida
+  const [isMostAttackSelected, setMostAttackSelected] = useState(false);  // Define o estado para o filtro de maior ataque
+  const [isMostHPSelected, setMostHPSelected] = useState(false);  // Define o estado para o filtro de maior vida
+  const [isMostDefSelected, setMostDefSelected] = useState(false);  // Define o estado para o filtro de maior defesa
+  const [isMostSpeedSelected, setMostSpeedSelected] = useState(false);  // Define o estado para o filtro de maior velocidade
+  const [searchKeyword, setSearchKeyword] = useState('');  // Define o estado para a palavra-chave de pesquisa
 
+  // Usa o hook useQuery para buscar os Pokémons com base nos filtros e paginação
   const { data, error, isLoading, isFetching } = useQuery(
     ['pokemons', { userId, page, maxRecords, isLatest, rarityChoosen, isMostAttackSelected, isMostHPSelected, isMostDefSelected, isMostSpeedSelected, searchKeyword }],
     fetchPokemons,
     {
-      keepPreviousData: true,
+      keepPreviousData: true,  // Mantém os dados anteriores enquanto busca os novos
     }
   );
 
+  // Função para obter a cor de acordo com a raridade do Pokémon
   const getRarityColor = (rarity) => {
     switch (rarity) {
       case 'Bronze':
@@ -88,9 +94,10 @@ const Pokedex = () => {
     }
   };
 
+  // Renderiza o componente Pokedex
   return (
     <>
-      <Navbar />
+      <Navbar />  
       <div className="pokedex p-6 bg-gradient-to-r from-yellow-400 to-orange-500 min-h-screen">
         <h1 className="text-3xl font-bold mb-6">Pokedex</h1>
         
@@ -192,4 +199,4 @@ const Pokedex = () => {
   );
 };
 
-export default Pokedex;
+export default Pokedex;  // Exporta o componente Pokedex como padrão

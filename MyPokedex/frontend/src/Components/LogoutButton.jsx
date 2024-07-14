@@ -1,12 +1,13 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';  // Importa a biblioteca React
+import { useNavigate } from 'react-router-dom';  // Importa o hook useNavigate do react-router-dom
 
 const LogoutButton = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate();  // Obtém a função de navegação para redirecionamento
 
+  // Função para tratar o logout
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+    localStorage.removeItem('authToken');  // Remove o token de autenticação do armazenamento local
+    navigate('/login');  // Redireciona o utilizador para a página de login
   };
 
   return (
@@ -16,4 +17,4 @@ const LogoutButton = () => {
   );
 };
 
-export default LogoutButton;
+export default LogoutButton;  // Exporta o componente LogoutButton como padrão

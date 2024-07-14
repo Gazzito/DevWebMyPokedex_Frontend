@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { useQueryClient } from 'react-query';
+import React, { useState } from 'react';  // Importa React e o hook useState
+import { useQueryClient } from 'react-query';  // Importa o hook useQueryClient da biblioteca react-query
 
+// Define o componente OpenPackButton que recebe packId e packPrice como props
 const OpenPackButton = ({ packId, packPrice }) => {
-  const [showModal, setShowModal] = useState(false);
-  const [pokemon, setPokemon] = useState(null);
-  const queryClient = useQueryClient();
-  const userId = localStorage.getItem('userId');
-  const token = localStorage.getItem('authToken');
-  const isPackFree = packPrice === 0;
+  const [showModal, setShowModal] = useState(false);  // Estado para controlar a exibição do modal
+  const [pokemon, setPokemon] = useState(null);  // Estado para armazenar o Pokémon obtido
+  const queryClient = useQueryClient();  // Obtém o cliente de query do react-query
+  const userId = localStorage.getItem('userId');  // Obtém o userId do localStorage
+  const token = localStorage.getItem('authToken');  // Obtém o authToken do localStorage
+  const isPackFree = packPrice === 0;  // Verifica se o pack é gratuito
 
+  // Função para abrir o pack e obter um Pokémon aleatório
   const handleOpenPack = async () => {
+    // Faz uma requisição à API para obter um Pokémon aleatório
     const response = await fetch(`http://localhost:5196/api/Pokemons/GetRandomPokemonInPack?packId=${packId}&userId=${userId}&isPackFree=${isPackFree}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -18,17 +21,18 @@ const OpenPackButton = ({ packId, packPrice }) => {
     });
 
     if (!response.ok) {
-      throw new Error('Erro ao abrir o pacote');
+      throw new Error('Erro ao abrir o pacote');  // Lança um erro se a resposta não for bem-sucedida
     }
 
-    const data = await response.json();
-    setPokemon(data);
-    setShowModal(true);
+    const data = await response.json();  // Converte a resposta em JSON
+    setPokemon(data);  // Define o Pokémon obtido no estado
+    setShowModal(true);  // Exibe o modal
 
-    // Refetch packs data to update the pack details
+    // Invalida a query 'packs' para atualizar os dados dos packs
     queryClient.invalidateQueries('packs');
   };
 
+  // Função para obter a cor da raridade do Pokémon
   const getRarityColor = (rarity) => {
     switch (rarity) {
       case 'Bronze':
@@ -49,17 +53,17 @@ const OpenPackButton = ({ packId, packPrice }) => {
   return (
     <div>
       <button
-        onClick={handleOpenPack}
+        onClick={handleOpenPack}  // Chama a função handleOpenPack ao clicar no botão
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
       >
         Abrir Pacote
       </button>
 
-      {showModal && (
+      {showModal && (  // Renderiza o modal se showModal for verdadeiro
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-md">
             <h2 className="text-2xl font-bold mb-4">Você recebeu um Pokémon!</h2>
-            {pokemon && (
+            {pokemon && (  // Renderiza os detalhes do Pokémon se pokemon não for nulo
               <>
                 <img
                   src={`data:image/jpeg;base64,${pokemon.image}`}
@@ -71,7 +75,7 @@ const OpenPackButton = ({ packId, packPrice }) => {
               </>
             )}
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => setShowModal(false)}  // Fecha o modal ao clicar no botão
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 w-full"
             >
               Fechar
@@ -83,4 +87,4 @@ const OpenPackButton = ({ packId, packPrice }) => {
   );
 };
 
-export default OpenPackButton;
+export default OpenPackButton;  // Exporta o componente OpenPackButton como padrão
